@@ -1,7 +1,8 @@
 <x-guest-layout>
     <x-authentication-card>
         <x-slot name="logo">
-            <x-authentication-card-logo />
+            <img src="{{ asset('kitshop_logo.png')}}" alt="" width="75">
+            <span class="font-extrabold text-xl tracking-tight text-dark">KitShop</span>
         </x-slot>
 
         <div x-data="{ recovery: false }">

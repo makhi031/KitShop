@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\EnsureTokenIsValid;
 
 Route::get('/', function () {
     return view('home');
@@ -31,15 +32,15 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('profile', function () {
-        return view('profile');
+    Route::get('user/customer/profile', function () {
+        return view('user/customer/profile');
     })->name('profile');
 
-    Route::get('cart', function () {
-        return view('cart');
+    Route::get('user/customer/cart', function () {
+        return view('user/customer/cart');
     })->name('cart');
 
-    Route::get('checkout', function () {
-        return view('checkout');
+    Route::get('user/customer/checkout', function () {
+        return view('user/customer/checkout');
     })->name('checkout');
 });
