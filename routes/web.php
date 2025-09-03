@@ -32,15 +32,38 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('user/customer/profile', function () {
+    Route::get('/profile', function () {
         return view('user/customer/profile');
     })->name('profile');
 
-    Route::get('user/customer/cart', function () {
+    Route::get('/cart', function () {
         return view('user/customer/cart');
     })->name('cart');
 
-    Route::get('user/customer/checkout', function () {
+    Route::get('/checkout', function () {
         return view('user/customer/checkout');
     })->name('checkout');
+});
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'hasRole:admin',
+])->group(function () {
+    Route::get('/admin', function () {
+        return view('user/admin/adminPanel');
+    })->name('admin.panel');
+
+    Route::get('/admin/products', function () {
+        return view('user/admin/products');
+    })->name('admin.products');
+
+    Route::get('/admin/users', function () {
+        return view('user/admin/users');
+    })->name('admin.users');
+
+    Route::get('/admin/orders', function () {
+        return view('user/admin/orders');
+    })->name('admin.orders');
 });

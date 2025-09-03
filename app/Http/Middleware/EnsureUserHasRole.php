@@ -15,8 +15,8 @@ class EnsureUserHasRole
      */
     public function handle(Request $request, Closure $next, $role): Response
     {
-        if (!$request->user()->hasRole($role)){
-            
+        if (!$request->user() || !$request->user()->hasRole($role)){
+            abort(403, 'Unauthorized.');
         }
         return $next($request);
     }
