@@ -58,6 +58,13 @@ Route::middleware([
     Route::get('/admin/products', function () {
         return view('user/admin/products');
     })->name('admin.products');
+    // Product API routes for AJAX CRUD
+    Route::get('/admin/products/api', [\App\Http\Controllers\Admin\ProductController::class, 'index']);
+    Route::get('/admin/products/api/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'show']);
+    Route::get('/admin/categories/api', [\App\Http\Controllers\Admin\ProductController::class, 'getCategories']);
+    Route::post('/admin/products/api', [\App\Http\Controllers\Admin\ProductController::class, 'store']);
+    Route::post('/admin/products/api/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'update']);
+    Route::delete('/admin/products/api/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'destroy']);
 
     Route::get('/admin/users', function () {
         return view('user/admin/users');
