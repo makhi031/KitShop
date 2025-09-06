@@ -1,152 +1,61 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My Cart | KitShop</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
-</head>
-<body class="bg-white text-gray-900 min-h-screen flex flex-col">
-    <!-- Header (reuse from home.blade.php) -->
-    <header class="sticky top-0 z-30 bg-blue-900">
-        <div class="max-w-7xl mx-auto flex items-center justify-between py-4 px-4 md:px-8">
-            <div class="flex items-center gap-2">
-                <span class="font-extrabold text-xl tracking-tight text-white">KitShop</span>
-            </div>
-            <nav class="hidden md:flex gap-7 text-base font-medium">
-                <a href="{{route('home')}}" class="text-white hover:text-yellow-400 transition">Home</a>
-                <a href="{{route('kits')}}" class="text-blue-100 hover:text-yellow-400 transition">Model Kits</a>
-                <a href="{{route('tools')}}" class="text-blue-100 hover:text-yellow-400 transition">Tools</a>
-                <a href="{{route('about')}}" class="text-blue-100 hover:text-yellow-400 transition">About</a>
-                <a href="{{route('contact')}}" class="text-blue-100 hover:text-yellow-400 transition">Contact</a>
-            </nav>
-            <div class="flex items-center gap-3">
-                @if (Route::has('login'))
-                    @auth
-                        <!-- Profile Dropdown -->
-                        <div class="relative group">
-                            <button class="flex items-center justify-center w-9 h-9 rounded-full bg-blue-800 hover:bg-blue-700 focus:outline-none" id="profile-menu-btn">
-                                <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="white"/><path d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                            </button>
-                            <div class="hidden group-hover:block absolute right-0 mt-2 w-40 bg-white rounded shadow-lg py-2 z-40 border border-gray-100 text-blue-900" id="profile-menu">
-                                <a href="{{ route('profile') }}" class="block px-4 py-2 hover:bg-blue-50">Profile</a>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-50">Logout</button>
-                                </form>
-                            </div>
-                        </div>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                const btn = document.getElementById('profile-menu-btn');
-                                const menu = document.getElementById('profile-menu');
-                                if (btn && menu) {
-                                    btn.addEventListener('click', function(e) {
-                                        e.stopPropagation();
-                                        menu.classList.toggle('hidden');
-                                    });
-                                    document.addEventListener('click', function(e) {
-                                        if (!btn.contains(e.target)) {
-                                            menu.classList.add('hidden');
-                                        }
-                                    });
-                                }
-                            });
-                        </script>
-                    @else
-                        <a href="{{ route('login') }}" class="text-yellow-400 hover:text-white transition font-semibold px-2">Log in</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="text-white hover:text-yellow-400 transition font-semibold px-2">Register</a>
-                        @endif
-                    @endauth
-                @endif
-                @auth
-                    <a href="#cart" class="relative group">
-                        <svg class="w-6 h-6 text-white group-hover:text-yellow-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-5-9V6a2 2 0 10-4 0v7"/></svg>
-                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">2</span>
-                    </a>
-                @endauth
-                <!-- Mobile menu button -->
-                <button class="md:hidden ml-2 p-2 rounded hover:bg-blue-800 focus:outline-none" id="mobile-menu-btn">
-                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
-            </div>
-        </div>
-        <div class="md:hidden hidden flex-col gap-2 px-6 pb-4 bg-blue-900" id="mobile-menu">
-            <a href="{{route('home')}}" class="block py-2 text-base font-medium text-white hover:text-yellow-400 transition">Home</a>
-            <a href="{{route('kits')}}" class="block py-2 text-base font-medium text-blue-100 hover:text-yellow-400 transition">Model Kits</a>
-            <a href="{{route('tools')}}" class="block py-2 text-base font-medium text-blue-100 hover:text-yellow-400 transition">Tools</a>
-            <a href="{{route('about')}}" class="block py-2 text-base font-medium text-blue-100 hover:text-yellow-400 transition">About</a>
-            <a href="{{route('contact')}}" class="block py-2 text-base font-medium text-blue-100 hover:text-yellow-400 transition">Contact</a>
-        </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const btn = document.getElementById('mobile-menu-btn');
-                const menu = document.getElementById('mobile-menu');
-                if (btn && menu) {
-                    btn.addEventListener('click', () => {
-                        menu.classList.toggle('hidden');
-                    });
-                }
-            });
-        </script>
-    </header>
+@extends('layouts.app')
 
-    <main class="flex-1 w-full bg-white">
+@section('content')
         <section class="max-w-4xl mx-auto py-16 px-4 md:px-8">
             <h1 class="text-3xl md:text-4xl font-extrabold text-blue-900 mb-8 text-center">My Cart</h1>
             @auth
-            <!-- Example: If cart is empty -->
-            {{-- <div class="text-center text-gray-500 py-20">
-                <svg class="mx-auto mb-4 w-16 h-16 text-blue-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-5-9V6a2 2 0 10-4 0v7"/></svg>
-                <p class="text-lg">Your cart is empty. Start shopping and add some Gunpla kits!</p>
-                <a href="{{route('kits')}}" class="mt-6 inline-block bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800 transition font-semibold">Shop Kits</a>
-            </div> --}}
-            <!-- Example: Cart with items -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-white rounded-lg shadow">
-                    <thead>
-                        <tr class="bg-blue-50 text-blue-900">
-                            <th class="py-3 px-4 text-left font-semibold">Product</th>
-                            <th class="py-3 px-4 text-left font-semibold">Price</th>
-                            <th class="py-3 px-4 text-left font-semibold">Quantity</th>
-                            <th class="py-3 px-4 text-left font-semibold">Subtotal</th>
-                            <th class="py-3 px-4"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Example cart item -->
-                        <tr class="border-b border-gray-100">
-                            <td class="py-4 px-4 flex items-center gap-4">
-                                <img src="https://www.gundamplanet.com/media/catalog/product/cache/1/image/600x/9df78eab33525d08d6e5fb8d27136e95/g/p/gp-4573102616072_1.jpg" alt="RX-78-2 Gundam" class="w-16 h-16 rounded bg-white border">
-                                <div>
-                                    <div class="font-semibold text-blue-900">RX-78-2 Gundam (HGUC)</div>
-                                    <div class="text-sm text-gray-500">High Grade</div>
-                                </div>
-                            </td>
-                            <td class="py-4 px-4 font-semibold text-red-600">$22.99</td>
-                            <td class="py-4 px-4">
-                                <input type="number" min="1" value="1" class="w-16 px-2 py-1 border border-gray-200 rounded text-center focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </td>
-                            <td class="py-4 px-4 font-semibold">$22.99</td>
-                            <td class="py-4 px-4">
-                                <button class="text-red-600 hover:text-red-800 transition" title="Remove">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Add more cart items as needed -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="flex flex-col md:flex-row items-center justify-between mt-8 gap-6">
-                <div class="text-lg font-semibold text-blue-900">Total: <span class="text-red-600">$22.99</span></div>
-                <a href="{{route('checkout')}}" class="bg-yellow-400 text-blue-900 px-8 py-3 rounded font-bold text-lg hover:bg-yellow-300 transition">Proceed to Checkout</a>
-            </div>
+            @if($cartItems->isEmpty())
+                <div class="text-center text-gray-500 py-20">
+                    <svg class="mx-auto mb-4 w-16 h-16 text-blue-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-5-9V6a2 2 0 10-4 0v7"/></svg>
+                    <p class="text-lg">Your cart is empty. Start shopping and add some Gunpla kits!</p>
+                    <a href="{{route('kits')}}" class="mt-6 inline-block bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800 transition font-semibold">Shop Kits</a>
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow">
+                        <thead>
+                            <tr class="bg-blue-50 text-blue-900">
+                                <th class="py-3 px-4 text-left font-semibold">Product</th>
+                                <th class="py-3 px-4 text-left font-semibold">Price</th>
+                                <th class="py-3 px-4 text-left font-semibold">Quantity</th>
+                                <th class="py-3 px-4 text-left font-semibold">Subtotal</th>
+                                <th class="py-3 px-4 text-left font-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($cartItems as $item)
+                            <tr class="border-b border-gray-100">
+                                <td class="py-4 px-4 flex items-center gap-4">
+                                    <img src="{{ $item->product->image_path ? asset('storage/' . $item->product->image_path) : 'https://via.placeholder.com/100' }}" alt="{{ $item->product->name }}" class="w-20 h-30 rounded bg-white border">
+                                    <div>
+                                        <div class="font-semibold text-blue-900">{{ $item->product->name }}</div>
+                                        <div class="text-sm text-gray-500">{{ $item->product->category }}</div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 font-semibold text-red-600">${{ number_format($item->price, 2) }}</td>
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center gap-2">
+                                        <button class="quantity-btn px-2 py-1 bg-gray-200 rounded text-lg font-bold" data-action="decrement" data-id="{{ $item->id }}">-</button>
+                                        <input type="number" min="1" class="quantity-input w-16 px-2 py-1 border border-gray-200 rounded text-center focus:ring-2 focus:ring-blue-300 focus:outline-none" value="{{ $item->quantity }}" data-id="{{ $item->id }}">
+                                        <button class="quantity-btn px-2 py-1 bg-gray-200 rounded text-lg font-bold" data-action="increment" data-id="{{ $item->id }}">+</button>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 font-semibold" id="subtotal-{{ $item->id }}">${{ number_format($item->subtotal, 2) }}</td>
+                                <td class="py-4 px-4">
+                                    <button class="remove-item-btn text-red-600 hover:text-red-800 transition" title="Remove" data-id="{{ $item->id }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex flex-col md:flex-row items-center justify-between mt-8 gap-6">
+                    <div class="text-lg font-semibold text-blue-900">Total: <span class="text-red-600" id="cart-total">${{ number_format($cartItems->sum('subtotal'), 2) }}</span></div>
+                    <a href="{{route('checkout')}}" class="bg-yellow-400 text-blue-900 px-8 py-3 rounded font-bold text-lg hover:bg-yellow-300 transition">Proceed to Checkout</a>
+                </div>
+            @endif
             @else
             <div class="text-center text-gray-500 py-20">
                 <svg class="mx-auto mb-4 w-16 h-16 text-blue-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-5-9V6a2 2 0 10-4 0v7"/></svg>
@@ -155,30 +64,138 @@
             </div>
             @endauth
         </section>
-    </main>
 
-    <!-- Footer (reuse from home.blade.php) -->
-    <footer class="bg-blue-900 text-blue-100 py-10 mt-auto">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 md:px-8 gap-6">
-            <div class="flex items-center gap-2 mb-4 md:mb-0">
-                <span class="font-extrabold text-lg tracking-tight text-white">KitShop</span>
-            </div>
-            <div class="flex gap-6 text-base font-medium">
-                <a href="{{route('home')}}" class="hover:text-yellow-400 transition">Home</a>
-                <a href="{{route('kits')}}" class="hover:text-yellow-400 transition">Model Kits</a>
-                <a href="{{route('tools')}}" class="hover:text-yellow-400 transition">Tools</a>
-                <a href="{{route('about')}}" class="hover:text-yellow-400 transition">About</a>
-                <a href="{{route('contact')}}" class="hover:text-yellow-400 transition">Contact</a>
-            </div>
-            <div class="flex gap-4 mt-4 md:mt-0">
-                <a href="#" aria-label="Instagram" class="hover:text-yellow-400 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" stroke="yellow" stroke-width="2" fill="none"/><rect x="2" y="2" width="20" height="20" rx="5" stroke="white" stroke-width="2" fill="none"/><circle cx="18" cy="6" r="1" fill="red"/></svg></a>
-                <a href="#" aria-label="Twitter" class="hover:text-yellow-400 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22.46 5.924c-.793.352-1.646.59-2.542.698a4.48 4.48 0 0 0 1.963-2.475a8.94 8.94 0 0 1-2.828 1.082a4.48 4.48 0 0 0-7.635 4.086A12.72 12.72 0 0 1 3.11 4.86a4.48 4.48 0 0 0 1.388 5.976a4.47 4.47 0 0 1-2.03-.561v.057a4.48 4.48 0 0 0 3.594 4.393a4.5 4.5 0 0 1-2.025.077a4.48 4.48 0 0 0 4.184 3.114A8.98 8.98 0 0 1 2 19.54a12.67 12.67 0 0 0 6.88 2.017c8.26 0 12.78-6.84 12.78-12.77c0-.195-.004-.39-.013-.583A9.1 9.1 0 0 0 24 4.59a8.93 8.93 0 0 1-2.54.697z" stroke="yellow"/></svg></a>
+        <!-- Remove Item Confirmation Modal -->
+        <div id="removeModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+                <button class="absolute top-2 right-2 text-gray-400 hover:text-red-600 text-2xl font-bold" id="closeRemoveModalBtn">&times;</button>
+                <h2 class="text-2xl font-bold mb-6 text-blue-900">Remove Item</h2>
+                <p class="text-gray-600 mb-6">Are you sure you want to remove this item from your cart?</p>
+                <div class="flex justify-end gap-2">
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition" id="cancelRemoveBtn">Cancel</button>
+                    <button class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition font-semibold" id="confirmRemoveBtn">Remove</button>
+                </div>
             </div>
         </div>
-        <div class="text-center text-xs text-blue-200 mt-6">
-            &copy; {{ date('Y') }} KitShop. All rights reserved.
-        </div>
-    </footer>
-</body>
-</html>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function updateQuantity(cartItemId, newQuantity, inputEl, subtotalEl, totalEl) {
+            fetch("{{ route('cart.updateQuantity') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content'),
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ cart_item_id: cartItemId, quantity: newQuantity })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (inputEl) inputEl.value = data.quantity;
+                    if (subtotalEl) subtotalEl.textContent = '$' + data.subtotal;
+                    if (totalEl) totalEl.textContent = '$' + data.cart_total;
+                } else {
+                    alert(data.error || 'Could not update quantity');
+                }
+            })
+            .catch(() => alert('Could not update quantity'));
+        }
 
+        document.querySelectorAll('.quantity-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.getAttribute('data-action');
+                const id = this.getAttribute('data-id');
+                const input = document.querySelector('.quantity-input[data-id="' + id + '"]');
+                let value = parseInt(input.value);
+                if (action === 'increment') value++;
+                if (action === 'decrement' && value > 1) value--;
+                updateQuantity(id, value, input, document.getElementById('subtotal-' + id), document.getElementById('cart-total'));
+            });
+        });
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function() {
+                let value = parseInt(this.value);
+                if (isNaN(value) || value < 1) value = 1;
+                this.value = value;
+                const id = this.getAttribute('data-id');
+                updateQuantity(id, value, this, document.getElementById('subtotal-' + id), document.getElementById('cart-total'));
+            });
+            input.addEventListener('blur', function() {
+                let value = parseInt(this.value);
+                if (isNaN(value) || value < 1) value = 1;
+                this.value = value;
+                const id = this.getAttribute('data-id');
+                updateQuantity(id, value, this, document.getElementById('subtotal-' + id), document.getElementById('cart-total'));
+            });
+        });
+
+        // Remove item functionality with modal
+        const removeModal = document.getElementById('removeModal');
+        const closeRemoveModalBtn = document.getElementById('closeRemoveModalBtn');
+        const cancelRemoveBtn = document.getElementById('cancelRemoveBtn');
+        const confirmRemoveBtn = document.getElementById('confirmRemoveBtn');
+        let itemToRemove = null;
+
+        function openRemoveModal(itemId) {
+            itemToRemove = itemId;
+            removeModal.classList.remove('hidden');
+        }
+
+        function closeRemoveModal() {
+            removeModal.classList.add('hidden');
+            itemToRemove = null;
+        }
+
+        function removeItem() {
+            if (itemToRemove) {
+                fetch("{{ route('cart.removeItem') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content'),
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ cart_item_id: itemToRemove })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the table row
+                        const row = document.querySelector(`[data-id="${itemToRemove}"]`).closest('tr');
+                        row.remove();
+                        // Update cart total
+                        document.getElementById('cart-total').textContent = '$' + data.cart_total;
+                        // Check if cart is empty and reload page if needed
+                        if (document.querySelectorAll('tbody tr').length === 0) {
+                            location.reload();
+                        }
+                        closeRemoveModal();
+                    } else {
+                        alert(data.error || 'Could not remove item');
+                    }
+                })
+                .catch(() => alert('Could not remove item'));
+            }
+        }
+
+        document.querySelectorAll('.remove-item-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                openRemoveModal(id);
+            });
+        });
+
+        closeRemoveModalBtn.addEventListener('click', closeRemoveModal);
+        cancelRemoveBtn.addEventListener('click', closeRemoveModal);
+        confirmRemoveBtn.addEventListener('click', removeItem);
+
+        // Close modal when clicking outside
+        removeModal.addEventListener('click', function(e) {
+            if (e.target === removeModal) {
+                closeRemoveModal();
+            }
+        });
+    });
+    </script>
+@endsection

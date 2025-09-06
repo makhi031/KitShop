@@ -16,6 +16,7 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">#</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Image</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Category</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Price</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-blue-900 uppercase tracking-wider">Stock</th>
@@ -29,7 +30,7 @@
     </div>
     <!-- Add/Edit Product Modal -->
     <div id="productModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+        <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg relative">
             <button class="absolute top-2 right-2 text-gray-400 hover:text-red-600 text-2xl font-bold" id="closeModalBtn">&times;</button>
             <h2 class="text-2xl font-bold mb-6 text-blue-900" id="modalTitle">Add Product</h2>
             <div id="modalErrors" class="mb-4"></div>
@@ -178,6 +179,9 @@
                             tr.innerHTML = `
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${idx + 1}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-900">${product.name}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    ${product.image_path ? `<img src="/storage/${product.image_path}" alt="${product.name}" class="h-30 w-40 object-cover rounded shadow" />` : ''}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${product.category}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-bold">$${product.price}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${product.stock}</td>

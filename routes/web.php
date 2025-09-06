@@ -8,7 +8,8 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('kits', function () {
-    return view('kits');
+    $products = \App\Models\Product::all();
+    return view('kits', compact('products'));
 })->name('kits');
 
 Route::get('tools', function () {
@@ -28,21 +29,23 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
     Route::get('/profile', function () {
         return view('user/customer/profile');
     })->name('profile');
 
     Route::get('/cart', function () {
-        return view('user/customer/cart');
+        $cart = auth()->user()->cart;
+        $cartItems = $cart ? $cart->items()->with('product')->get() : collect();
+        return view('user/customer/cart', compact('cart', 'cartItems'));
     })->name('cart');
 
     Route::get('/checkout', function () {
         return view('user/customer/checkout');
     })->name('checkout');
+
+    Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'addToCart'])->name('cart.add');
+    Route::post('/cart/update-quantity', [\App\Http\Controllers\CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+    Route::post('/cart/remove-item', [\App\Http\Controllers\CartController::class, 'removeItem'])->name('cart.removeItem');
 });
 
 Route::middleware([
@@ -58,7 +61,6 @@ Route::middleware([
     Route::get('/admin/products', function () {
         return view('user/admin/products');
     })->name('admin.products');
-    // Product API routes for AJAX CRUD
     Route::get('/admin/products/api', [\App\Http\Controllers\Admin\ProductController::class, 'index']);
     Route::get('/admin/products/api/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'show']);
     Route::get('/admin/categories/api', [\App\Http\Controllers\Admin\ProductController::class, 'getCategories']);

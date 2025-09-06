@@ -73,4 +73,9 @@ class User extends Authenticatable
     {
         return $this->role === $role;
     }
+
+    public function cart()
+    {
+        return $this->hasOne(\App\Models\Cart::class);
+    }
 }
